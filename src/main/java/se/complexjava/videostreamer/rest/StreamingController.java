@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -21,16 +22,18 @@ public class StreamingController {
     @GetMapping("/videos/{name}")
     public ResponseEntity<ResourceRegion> getVideo(@PathVariable(name = "name") String name, @RequestHeader HttpHeaders headers) throws Exception{
 
-        Path file = Paths.get("./videos/" + name);
+        //Path file = Paths.get("./videos/" + name);//path syntax for running on windows
+        Path file = Paths.get("/videos/" + name);//linux path syntax for accessing volume in container
+
         UrlResource video = new UrlResource(file.toUri());
 
-        ResourceRegion newResource = resourceRegion(video, headers);
+        ResourceRegion region = resourceRegion(video, headers);
 
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                 .contentType(MediaTypeFactory
                         .getMediaType(video)
                         .orElse(MediaType.APPLICATION_OCTET_STREAM))
-                .body(newResource);
+                .body(region);
     }
 
 

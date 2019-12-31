@@ -1,6 +1,7 @@
 package se.complexjava.videostreamer.rest;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.*;
@@ -18,12 +19,16 @@ import java.util.List;
 @RestController
 public class StreamingController {
 
+    @Value("${file_location}")
+    private String fileLocation;
+
 
     @GetMapping("/videos/{name}")
     public ResponseEntity<ResourceRegion> getVideo(@PathVariable(name = "name") String name, @RequestHeader HttpHeaders headers) throws Exception{
 
         //Path file = Paths.get("./videos/" + name);//path syntax for running on windows
-        Path file = Paths.get("/videos/" + name);//linux path syntax for accessing volume in container
+        //Path file = Paths.get("/videos/" + name);//linux path syntax for accessing volume in container
+        Path file = Paths.get(fileLocation + "/" + name);
 
         UrlResource video = new UrlResource(file.toUri());
 
